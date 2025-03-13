@@ -13,6 +13,8 @@ import { Response } from 'express';
 @Injectable()
 export class AuthService {
     private secret: Buffer;
+    private EMAIL_REGEXP = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
+    private PASSWORDREGEXP = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
     constructor(private readonly userService: UserService,  private jwtService: JwtService, @Inject(DRIZZLE) private db: DrizzleDB) {
         this.secret = this.getSecret();
         
@@ -33,18 +35,18 @@ export class AuthService {
     async validateUser(data: LoginUserDto) {
         const {email, password} = data;
 
-  
-      
-
         if(!email || !password){
-            throw new BadRequestException('Email and password are required');
+          throw new UnauthorizedException('Required input');
         }
 
-        if(email.length === 0 || password.length < 6){
-            throw new BadRequestException('Password must be at least 6 characters long');
+        if(!email){
+            throw new UnauthorizedException('Email is Invalid');
         }
-        
-        
+
+        if(!password){
+          throw new UnauthorizedException('Password is Invalid');
+        }
+          
         const user = await this.userService.findUserWithoutSSO({email: email});
 
         if(!user){
@@ -99,14 +101,17 @@ export class AuthService {
 
     async register(data: RegisterUserDto){
       
-          if(!data.email || !data.password){
-            throw new UnauthorizedException('Required Email and Password');
+      if(!data.email || !data.password || !data.firstName || !data.lastName || !data.username){
+            throw new UnauthorizedException('Required input');
         }
 
-        if(data.email.length === 0 || data.password.length < 6){
-            throw new UnauthorizedException('Required Email and Password More than 6 characters');
+        if(!this.EMAIL_REGEXP.test(data.email)){
+            throw new UnauthorizedException('Email is Invalid');
         }
-    
+
+        if(!this.PASSWORDREGEXP.test(data.password)){
+          throw new UnauthorizedException('Password is Invalid');
+        }
         if(await this.userService.findUser({email: data.email})){
             throw new UnauthorizedException('Email already exists');
         }
@@ -116,7 +121,11 @@ export class AuthService {
         });
         const roleid = 2;
         const user = await this.userService.createUser({...data, password: hash, roleid});
-        return user;
+        if(user){
+          return "register success";
+        }else{
+          throw new UnauthorizedException('register fail');
+        }
     }
 
     async googleLogin(req) : Promise<any>{

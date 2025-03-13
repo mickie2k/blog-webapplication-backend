@@ -12,8 +12,13 @@ export class UserService {
 
 
     async createUser(data: CreateUserDto) {
-        const user = await this.db.insert(schema.users).values(data)
-        return user;
+        try{
+            const user = await this.db.insert(schema.users).values(data);
+            return user;
+        }catch (error) {
+            console.log(error)
+            throw new Error('Failed to create user');
+        }
     }
 
     async findUser(data: FindUserDto) {
