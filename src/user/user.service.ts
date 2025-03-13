@@ -4,7 +4,7 @@ import * as schema from 'src/drizzle/schema';
 import { CreateUserDto, FindUserDto  } from './dto/user.dto';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import { DrizzleDB } from 'src/drizzle/types/drizzletype';
-import { eq, lt, gte, ne } from 'drizzle-orm';
+import { eq, lt, gte, ne,and, isNull, isNotNull } from 'drizzle-orm';
 
 @Injectable()
 export class UserService {
@@ -22,6 +22,18 @@ export class UserService {
         })
         return user;
     }
+
+    async findUserWithoutSSO(data: FindUserDto) {
+        const user = await this.db.query.users.findFirst({
+            where: and(
+            eq(schema.users.email, data.email),
+            isNull(schema.users.googleId),
+            isNotNull(schema.users.password)
+            )
+        })
+        return user;
+    }
+
 
     async getProfile(user : any) {
         console.log(user);

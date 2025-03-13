@@ -10,6 +10,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { DrizzleModule } from 'src/drizzle/drizzle.module';
+import { JwtRefreshStrategy } from './strategies/jwt_refresh.strategy';
 
 
 
@@ -28,7 +29,7 @@ import { DrizzleModule } from 'src/drizzle/drizzle.module';
         
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy,JwtRefreshStrategy],
   controllers: [AuthController],
   exports: []
 })

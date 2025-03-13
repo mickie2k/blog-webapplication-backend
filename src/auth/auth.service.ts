@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { LoginUserDto, RegisterUserDto } from 'src/auth/dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -7,6 +7,7 @@ import { DrizzleDB } from 'src/drizzle/types/drizzletype';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import * as schema from 'src/drizzle/schema';
 import { eq, lt, gte, ne } from 'drizzle-orm';
+import { Response } from 'express';
 
 
 @Injectable()
@@ -32,19 +33,22 @@ export class AuthService {
     async validateUser(data: LoginUserDto) {
         const {email, password} = data;
 
+  
+      
+
         if(!email || !password){
-            throw new UnauthorizedException('Required Email and Password');
+            throw new BadRequestException('Email and password are required');
         }
 
         if(email.length === 0 || password.length < 6){
-            throw new UnauthorizedException('Required Email and Password More than 6 characters');
+            throw new BadRequestException('Password must be at least 6 characters long');
         }
         
         
-        const user = await this.userService.findUser({email: email});
+        const user = await this.userService.findUserWithoutSSO({email: email});
 
         if(!user){
-            throw new UnauthorizedException('Invalid username or password');
+            throw new UnauthorizedException('Email or Password is incorrect');
         }
         
         if(user.password && await argon2.verify(user.password, password,{ secret: this.secret})){
@@ -52,17 +56,45 @@ export class AuthService {
           return result;
 
         } else {
-          throw new UnauthorizedException('Invalid username or password');
+          throw new UnauthorizedException('Email or Password is incorrect');
         }
     }
 
-    async login(user: any) {
+    async login(user: any, res: Response, redirect:boolean = false) {
 
-           const payload = { sub: user.id, email: user.email, role: user.roleid};
-           return {
-              accessToken: await this.jwtService.signAsync(payload)
-           }
-      
+           const payload = { sub: user.id, email: user.email, roleid: user.roleid};
+           
+        
+          const accessToken = await this.jwtService.signAsync(payload)
+          const refreshToken = await this.jwtService.signAsync(payload, {
+            expiresIn: '7d',
+            // need different secret 
+          })
+          
+             res.cookie('access_token', accessToken , {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 1000 * 60 * 60)
+            })
+
+            res.cookie('refresh_token', refreshToken , {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+            })
+          
+            if(redirect){
+              res.redirect(process.env.FRONTEND_URL + '');
+            }else{
+                return {
+                  message: 'Login Successful'
+              };
+        
+            }
+
+        
     }
 
     async register(data: RegisterUserDto){
@@ -109,14 +141,17 @@ export class AuthService {
         if(!result){
           throw new UnauthorizedException('Google login failed: Unable to create user');
         };
-        payload = { sub: result, email: email, role: 2};
+        payload = { id: result, email: email, roleid: 2};
       }else{
-        payload = { sub: user.id, email: user.email, role: user.roleid};
+        payload = { id: user.id, email: user.email, roleid: user.roleid};
       }
-       return {
-          accessToken: await this.jwtService.signAsync(payload)
-      }
+       
+      return this.login(payload, req.res, true);
         
     }
+
+    async refreshToken(user: any, res: Response) {
+    }
   }
+
 

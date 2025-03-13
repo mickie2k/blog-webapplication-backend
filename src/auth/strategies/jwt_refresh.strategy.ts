@@ -4,12 +4,12 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ConfigService } from "@nestjs/config";
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy){
+export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'){
     constructor(private readonly configService: ConfigService) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request) => {
-                  return request?.cookies?.access_token; // Ensure this points to the correct cookie
+                  return request?.cookies?.refresh_token; // Ensure this points to the correct cookie
                 },
               ]),
             ignoreExpiration: false,
