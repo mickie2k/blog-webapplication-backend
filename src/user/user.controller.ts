@@ -15,10 +15,12 @@ export class UserController {
     }
     
     @UseGuards(JWTAuthGuard)
-    @Get()
-    getUser(){
-        return 'Only Login can see';
+    @Get('username')
+    getUser(@Request() req){
+        return this.userService.getUsername(req.user);
     }
+
+
 
 
 

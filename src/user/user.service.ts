@@ -12,8 +12,13 @@ export class UserService {
 
 
     async createUser(data: CreateUserDto) {
-        const user = await this.db.insert(schema.users).values(data)
-        return user;
+        try{
+            const user = await this.db.insert(schema.users).values(data);
+            return user;
+        }catch (error) {
+            console.log(error)
+            throw new Error('Failed to create user');
+        }
     }
 
     async findUser(data: FindUserDto) {
@@ -36,12 +41,19 @@ export class UserService {
 
 
     async getProfile(user : any) {
-        console.log(user);
         const users = await this.db.query.users.findFirst({
             where: eq(schema.users.id, user.id)
         });
         return users;
     }
 
+    async getUsername(user: any) {
+        const res = await this.db.query.users.findFirst({
+            where: eq(schema.users.id, user.id)
+        });
+        return {
+            username: res?.username,
+        };
+    }
 }
 

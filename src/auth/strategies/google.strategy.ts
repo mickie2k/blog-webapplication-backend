@@ -12,11 +12,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google'){
             callbackURL: 'http://localhost:3000/auth/google/callback',
             scope: ['email', 'profile'],
         });
-       
-        
-    
-       
-    
+
       }
 
       async validate(
@@ -25,6 +21,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google'){
         profile: any,
         done: VerifyCallback,
       ): Promise<any> {
+        console.log(profile)
         const { id, emails, photos } = profile;
         const { givenName, familyName } = profile.name || {}; // Add a fallback to an empty object
 

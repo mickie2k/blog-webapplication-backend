@@ -13,12 +13,10 @@ import { JWTRefreshAuthGuard } from './guards/jwt_refresh.guard';
 export class AuthController {
     constructor(private readonly authService: AuthService, private readonly userService:UserService){}
 
-
-    @UseGuards(LocalAuthGuard)
     @Post('/login')
+    @UseGuards(LocalAuthGuard)
     async login(@Request() req, @Res({passthrough : true}) res:Response ){
         return await this.authService.login(req.user,res);
-       
     }
 
     @Post('/register')
@@ -26,8 +24,8 @@ export class AuthController {
         return this.authService.register(data);
     }
 
-    @UseGuards(JWTRefreshAuthGuard)
     @Post('/refresh')
+    @UseGuards(JWTRefreshAuthGuard)
     async refresh(@Request() req, @Res({passthrough : true}) res:Response ){
         console.log('refresh token',req.user);
         return await this.authService.login(req.user,res);
@@ -36,8 +34,9 @@ export class AuthController {
 
     
 
+   
+    @Get() 
     @UseGuards(JWTAuthGuard)
-    @Get()
     getUser(@Request() req){
         return this.userService.getProfile(req.user);
     }

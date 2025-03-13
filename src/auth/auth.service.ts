@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { LoginUserDto, RegisterUserDto } from 'src/auth/dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -13,6 +13,8 @@ import { Response } from 'express';
 @Injectable()
 export class AuthService {
     private secret: Buffer;
+    private EMAIL_REGEXP = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
+    private PASSWORDREGEXP = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
     constructor(private readonly userService: UserService,  private jwtService: JwtService, @Inject(DRIZZLE) private db: DrizzleDB) {
         this.secret = this.getSecret();
         
@@ -33,18 +35,18 @@ export class AuthService {
     async validateUser(data: LoginUserDto) {
         const {email, password} = data;
 
-  
-      
-
         if(!email || !password){
-            throw new BadRequestException('Email and password are required');
+          throw new UnauthorizedException('Required input');
         }
 
-        if(email.length === 0 || password.length < 6){
-            throw new BadRequestException('Password must be at least 6 characters long');
+        if(!this.EMAIL_REGEXP.test(email)){
+          throw new BadRequestException('Email is Invalid');
         }
-        
-        
+
+        if(!password){
+          throw new UnauthorizedException('Password is Invalid');
+        }
+          
         const user = await this.userService.findUserWithoutSSO({email: email});
 
         if(!user){
@@ -86,7 +88,7 @@ export class AuthService {
             })
           
             if(redirect){
-              res.redirect(process.env.FRONTEND_URL + '');
+              res.redirect(process.env.FRONTEND_URL + '/user');
             }else{
                 return {
                   message: 'Login Successful'
@@ -99,16 +101,19 @@ export class AuthService {
 
     async register(data: RegisterUserDto){
       
-          if(!data.email || !data.password){
-            throw new UnauthorizedException('Required Email and Password');
+      if(!data.email || !data.password || !data.firstName || !data.lastName || !data.username){
+            throw new BadRequestException('Required input');
         }
 
-        if(data.email.length === 0 || data.password.length < 6){
-            throw new UnauthorizedException('Required Email and Password More than 6 characters');
+        if(!this.EMAIL_REGEXP.test(data.email)){
+            throw new BadRequestException('Email is Invalid');
         }
-    
+
+        if(!this.PASSWORDREGEXP.test(data.password)){
+          throw new BadRequestException('Password is Invalid');
+        }
         if(await this.userService.findUser({email: data.email})){
-            throw new UnauthorizedException('Email already exists');
+            throw new ConflictException('Email already exists');
         }
         const hash = await argon2.hash(data.password,{
             secret: this.secret
@@ -116,7 +121,13 @@ export class AuthService {
         });
         const roleid = 2;
         const user = await this.userService.createUser({...data, password: hash, roleid});
-        return user;
+        if(user){
+          return {
+            message: 'Register Successful'
+        };
+        }else{
+          throw new InternalServerErrorException('Something went wrong');
+        }
     }
 
     async googleLogin(req) : Promise<any>{
@@ -150,8 +161,5 @@ export class AuthService {
         
     }
 
-    async refreshToken(user: any, res: Response) {
-    }
+
   }
-
-
