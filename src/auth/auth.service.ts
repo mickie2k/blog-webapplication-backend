@@ -15,6 +15,8 @@ export class AuthService {
     private secret: Buffer;
     private EMAIL_REGEXP = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
     private PASSWORDREGEXP = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+    private USERNAME_REGEXP = /^[a-zA-Z0-9][a-zA-Z0-9_-]{2,29}$/;
+    private NAME_REGEXP = /^[A-Za-z]{2,50}$/;
     constructor(private readonly userService: UserService,  private jwtService: JwtService, @Inject(DRIZZLE) private db: DrizzleDB) {
         this.secret = this.getSecret();
         
@@ -112,9 +114,23 @@ export class AuthService {
         if(!this.PASSWORDREGEXP.test(data.password)){
           throw new UnauthorizedException('Password is Invalid');
         }
+
+        if(!this.USERNAME_REGEXP.test(data.username)){
+          throw new UnauthorizedException('username is Invalid');
+        }
+
+        if(!this.NAME_REGEXP.test(data.firstName)){
+          throw new UnauthorizedException('first name is Invalid');
+        }
+
+        if(!this.NAME_REGEXP.test(data.lastName)){
+          throw new UnauthorizedException('last name is Invalid');
+        }
+
         if(await this.userService.findUser({email: data.email})){
             throw new UnauthorizedException('Email already exists');
         }
+        
         const hash = await argon2.hash(data.password,{
             secret: this.secret
             
