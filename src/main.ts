@@ -1,10 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
-
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  let httpsOptions: { key: Buffer; cert: Buffer } | undefined = undefined;
+
+  console.log(process.env.NODE_ENV);
+  if (process.env.NODE_ENV === 'production') {
+    console.log('Production mode');
+    httpsOptions = {
+      key: fs.readFileSync('./cert/cert.key'),
+      cert: fs.readFileSync('./cert/cert.crt'),
+    };
+  }
+  const app = await NestFactory.create(AppModule,{
+    httpsOptions
+  });
+
+  console.log(process.env.FRONTEND_URL);
   app.enableCors({
     origin: [process.env.FRONTEND_URL],
     credentials: true
