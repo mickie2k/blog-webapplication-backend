@@ -10,8 +10,8 @@ async function bootstrap() {
   if (process.env.NODE_ENV === 'production') {
     console.log('Production mode');
     httpsOptions = {
-      key: fs.readFileSync('./cert/cert.key'),
-      cert: fs.readFileSync('./cert/cert.crt'),
+      key: fs.readFileSync('E:/localhost-key.pem'),
+      cert: fs.readFileSync('E:/localhost.pem'),
     };
   }
   const app = await NestFactory.create(AppModule,{

@@ -1,5 +1,6 @@
 
-import { int, mysqlTable, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlTable, varchar, timestamp } from "drizzle-orm/mysql-core";
+import { sql } from 'drizzle-orm';
 import { v4 as uuid } from 'uuid';
 
 export const users = mysqlTable('users', {
@@ -11,6 +12,14 @@ export const users = mysqlTable('users', {
     password: varchar({ length: 255 }),
     roleid: int().references(()=> roles.roleid),
     googleId: varchar({ length: 255 }),
+
+})
+
+export const blogs = mysqlTable('blogs', {
+    id: varchar({ length : 36}).primaryKey().$defaultFn(()=> uuid()),
+    username: varchar({ length: 255 }),
+    content: varchar({ length: 255 }),
+    createTime: timestamp().notNull().default(sql`CURRENT_TIMESTAMP`),
 
 })
 
