@@ -22,9 +22,10 @@ export class UserController {
         return this.userService.findUser(data);
     }
     
-    @Get('all')
+
     @Roles(Role.ADMIN)
     @UseGuards(JWTAuthGuard, RolesGuard)
+    @Get('all')
     findAllUsers(){
         return { message: "u are admin" };
     }
