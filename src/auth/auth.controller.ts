@@ -52,7 +52,7 @@ export class AuthController {
     async googleAuthRedirect(@Request() req, @Res({passthrough:true}) res: Response) {
         return  await this.authService.googleLogin(req);
        
-    }
+    }   
   
 
 }

@@ -22,29 +22,62 @@ export class UserService {
     }
 
     async findUser(data: FindUserDto) {
-        const user = await this.db.query.users.findFirst({
-            where: eq(schema.users.email, data.email)
-        })
-        return user;
+
+        // const user = await this.db.query.users.findFirst({
+        //     where: eq(schema.users.email, data.email),
+            
+        // })
+        const user = await this.db.select({
+            id: schema.users.id,
+            username: schema.users.username,
+            firstName: schema.users.firstName,
+            lastName: schema.users.lastName,
+            password: schema.users.password,
+            email: schema.users.email,
+            googleId: schema.users.googleId,
+            role: schema.roles.name, 
+        }).from(schema.users).where(
+        and(
+            eq(schema.users.email, data.email),
+        )).innerJoin(schema.roles, eq(schema.users.roleid, schema.roles.roleid)).limit(1);
+        return user[0];
     }
 
     async findUserWithoutSSO(data: FindUserDto) {
-        const user = await this.db.query.users.findFirst({
-            where: and(
+        const user = await this.db.select({
+            id: schema.users.id,
+            username: schema.users.username,
+            firstName: schema.users.firstName,
+            lastName: schema.users.lastName,
+            password: schema.users.password,
+            email: schema.users.email,
+            googleId: schema.users.googleId,
+            role: schema.roles.name, 
+        }).from(schema.users).where(
+        and(
             eq(schema.users.email, data.email),
             isNull(schema.users.googleId),
             isNotNull(schema.users.password)
-            )
-        })
-        return user;
+        )).innerJoin(schema.roles, eq(schema.users.roleid, schema.roles.roleid)).limit(1);
+
+        return user[0];
     }
 
 
     async getProfile(user : any) {
-        const users = await this.db.query.users.findFirst({
-            where: eq(schema.users.id, user.id)
-        });
-        return users;
+        const userRes = await this.db.select({
+            id: schema.users.id,
+            username: schema.users.username,
+            firstName: schema.users.firstName,
+            lastName: schema.users.lastName,
+            email: schema.users.email,
+            googleId: schema.users.googleId,
+            role: schema.roles.name, 
+        }).from(schema.users).where(
+        and(
+            eq(schema.users.id, user.id),
+        )).innerJoin(schema.roles, eq(schema.users.roleid, schema.roles.roleid)).limit(1);
+        return userRes[0];
     }
 
     async getUsername(user: any) {

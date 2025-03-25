@@ -1,5 +1,6 @@
 
-import { int, mysqlTable, varchar } from "drizzle-orm/mysql-core";
+
+import { int, mysqlTable, varchar, boolean, date } from "drizzle-orm/mysql-core";
 import { v4 as uuid } from 'uuid';
 
 export const users = mysqlTable('users', {
@@ -17,4 +18,14 @@ export const users = mysqlTable('users', {
 export const roles = mysqlTable('roles', {
     roleid: int().primaryKey().autoincrement(),
     name: varchar({ length: 255 }),
+})
+
+export const blog = mysqlTable('blog', {
+    id: varchar({ length : 36}).primaryKey().$defaultFn(()=> uuid()),
+    title: varchar({ length: 255 }),
+    content: varchar({ length: 255 }),
+    authorid: varchar({ length : 36}).references(()=> users.id),
+    isPremium: boolean(),
+    createdAt: date(),
+    updatedAt: date(),
 })

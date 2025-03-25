@@ -11,7 +11,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { DrizzleModule } from 'src/drizzle/drizzle.module';
 import { JwtRefreshStrategy } from './strategies/jwt_refresh.strategy';
-
+import { RolesGuard } from './guards/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { JWTAuthGuard } from './guards/jwt_auth.guard';
 
 
 @Module({
