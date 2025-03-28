@@ -161,4 +161,11 @@ export class AuthService {
     }
 
 
+    async logout(res: Response) {
+      res.clearCookie('access_token')
+      res.clearCookie('refresh_token')
+      return {
+        message: 'Logout Successful'
+      };
+    }
   }
