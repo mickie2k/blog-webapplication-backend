@@ -12,9 +12,9 @@ import { JWTRefreshAuthGuard } from './guards/jwt_refresh.guard';
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService, private readonly userService:UserService){}
-
-    @Post('/login')
+    
     @UseGuards(LocalAuthGuard)
+    @Post('/login')
     async login(@Request() req, @Res({passthrough : true}) res:Response ){
         return await this.authService.login(req.user,res);
     }
@@ -24,8 +24,9 @@ export class AuthController {
         return this.authService.register(data);
     }
 
-    @Post('/refresh')
+
     @UseGuards(JWTRefreshAuthGuard)
+    @Post('/refresh')
     async refresh(@Request() req, @Res({passthrough : true}) res:Response ){
         console.log('refresh token',req.user);
         return await this.authService.login(req.user,res);
@@ -34,9 +35,8 @@ export class AuthController {
 
     
 
-   
-    @Get() 
     @UseGuards(JWTAuthGuard)
+    @Get() 
     getUser(@Request() req){
         return this.userService.getProfile(req.user);
     }
@@ -52,7 +52,7 @@ export class AuthController {
     async googleAuthRedirect(@Request() req, @Res({passthrough:true}) res: Response) {
         return  await this.authService.googleLogin(req);
        
-    }
+    }   
   
 
 }

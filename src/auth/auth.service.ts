@@ -64,7 +64,7 @@ export class AuthService {
 
     async login(user: any, res: Response, redirect:boolean = false) {
 
-           const payload = { sub: user.id, email: user.email, roleid: user.roleid};
+           const payload = { sub: user.id, email: user.email, role: user.role};
            
         
           const accessToken = await this.jwtService.signAsync(payload)
@@ -136,9 +136,8 @@ export class AuthService {
       }
 
       const { email, firstName, lastName, googleId } = req.user;
-      const user = await this.db.query.users.findFirst({
-        where: eq(schema.users.email, email) ,
-      })
+      const user = await this.userService.findUser({email: email});
+      
       let payload = {};
       if (!user) {
         const result = await this.db.insert(schema.users).values({
@@ -152,9 +151,9 @@ export class AuthService {
         if(!result){
           throw new UnauthorizedException('Google login failed: Unable to create user');
         };
-        payload = { id: result, email: email, roleid: 2};
+        payload = { id: result, email: email, role: "USER"};
       }else{
-        payload = { id: user.id, email: user.email, roleid: user.roleid};
+        payload = { id: user.id, email: user.email, role: user.role};
       }
        
       return this.login(payload, req.res, true);

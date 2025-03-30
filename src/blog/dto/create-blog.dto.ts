@@ -1,11 +1,6 @@
 export class CreateBlogDto {
-    username: string;
-    header: string;
+    title: string;
+    userID: string;
     content: string;
-}
-
-export class UpdateBlogDto {
-    id: string;
-    header: string;
-    content: string;
+    isPremuim: boolean;
 }
