@@ -4,6 +4,5 @@ import { IsNumber } from 'class-validator';
 
 export class UpdateBlogDto extends PartialType(CreateBlogDto) {
     
-    @IsNumber()
-    id: number;
+
 }
