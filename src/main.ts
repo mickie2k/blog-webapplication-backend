@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   let httpsOptions: { key: Buffer; cert: Buffer } | undefined = undefined;
@@ -15,7 +16,8 @@ async function bootstrap() {
     };
   }
   const app = await NestFactory.create(AppModule,{
-    httpsOptions
+    logger: ['debug','error', 'warn', 'log'],
+    httpsOptions,
   });
 
   console.log(process.env.FRONTEND_URL);
@@ -23,6 +25,7 @@ async function bootstrap() {
     origin: [process.env.FRONTEND_URL],
     credentials: true
   });
+  app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   await app.listen(process.env.PORT ?? 3000);
 }

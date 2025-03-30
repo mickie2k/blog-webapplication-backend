@@ -66,12 +66,10 @@ export class UserService {
 
     async getProfile(user : any) {
         const userRes = await this.db.select({
-            id: schema.users.id,
             username: schema.users.username,
             firstName: schema.users.firstName,
             lastName: schema.users.lastName,
             email: schema.users.email,
-            googleId: schema.users.googleId,
             role: schema.roles.name, 
         }).from(schema.users).where(
         and(

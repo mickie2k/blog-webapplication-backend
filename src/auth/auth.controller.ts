@@ -24,6 +24,12 @@ export class AuthController {
         return this.authService.register(data);
     }
 
+    @Get('/logout')
+    @UseGuards(JWTAuthGuard)
+    async logout(@Res({passthrough : true}) res:Response ){
+        return await this.authService.logout(res);
+    }
+
 
     @UseGuards(JWTRefreshAuthGuard)
     @Post('/refresh')
@@ -33,10 +39,8 @@ export class AuthController {
     }
   
 
-    
-
     @UseGuards(JWTAuthGuard)
-    @Get() 
+    @Get('me') 
     getUser(@Request() req){
         return this.userService.getProfile(req.user);
     }
@@ -53,6 +57,7 @@ export class AuthController {
         return  await this.authService.googleLogin(req);
        
     }   
-  
+    
+
 
 }

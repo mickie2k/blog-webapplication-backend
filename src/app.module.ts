@@ -7,13 +7,14 @@ import { DrizzleModule } from './drizzle/drizzle.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: process.env.NODE_ENV ?  `.env.${process.env.NODE_ENV}` : '.env',
       isGlobal: true, // Makes the config accessible throughout the app
-    }), UserModule, DrizzleModule, AuthModule, BlogModule],
+    }), UserModule, DrizzleModule, AuthModule, BlogModule, AdminModule],
   controllers: [AppController],
   providers: [AppService],
 })
