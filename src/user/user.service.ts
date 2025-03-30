@@ -56,7 +56,6 @@ export class UserService {
         }).from(schema.users).where(
         and(
             eq(schema.users.email, data.email),
-            isNull(schema.users.googleId),
             isNotNull(schema.users.password)
         )).innerJoin(schema.roles, eq(schema.users.roleid, schema.roles.roleid)).limit(1);
 

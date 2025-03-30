@@ -151,10 +151,15 @@ export class AuthService {
         if(!result){
           throw new UnauthorizedException('Google login failed: Unable to create user');
         };
-        payload = { id: result, email: email, role: "USER"};
+        payload = { id: result[0].id, email: email, role: "USER"};
       }else{
+        if(!user.googleId){
+          await this.db.update(schema.users).set({googleId}).where(eq(schema.users.id, user.id));
+        }
         payload = { id: user.id, email: user.email, role: user.role};
       }
+
+  
        
       return this.login(payload, req.res, true);
         

@@ -1,6 +1,6 @@
 
 import { Transform, TransformFnParams } from "class-transformer";
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsString, MaxLength } from "class-validator";
 import * as _ from 'lodash'
 export class CreateBlogDto {
     @IsString()
@@ -13,4 +13,7 @@ export class CreateBlogDto {
     @IsNotEmpty()
     @Transform(({ value }) => _.escape(value))
     content: string;
+
+    @IsBoolean()
+    isPremium?: boolean = false; // Default value is false
 }

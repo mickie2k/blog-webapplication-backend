@@ -33,6 +33,15 @@ export class BlogController {
    
   }
 
+  @UseGuards(JWTAuthGuard)
+  @Get('me/:id')
+  getMyBlogByID(@Request() req, @Param('id') id: string) {
+   return this.blogService.getMyBlogId(+id,req.user);
+   
+  }
+
+
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.blogService.findOne(+id);
