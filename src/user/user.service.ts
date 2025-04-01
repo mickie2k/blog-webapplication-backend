@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
 import * as schema from 'src/drizzle/schema';
@@ -86,4 +87,5 @@ export class UserService {
             username: res?.username,
         };
     }
+
 }
