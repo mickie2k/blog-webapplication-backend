@@ -34,14 +34,14 @@ export class BlogController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.blogService.findOne(id);
   }
 
   @UseGuards(JWTAuthGuard)
   @Patch(':id')
   async update(@Request() req, @Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    const res = await this.blogService.update(+id, updateBlogDto,  req.user);
+    const res = await this.blogService.update(updateBlogDto);
     if(res){ 
       return  {message: "Blog updated successfully"};
     }else{
@@ -50,7 +50,7 @@ export class BlogController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.blogService.remove(id);
   }
 

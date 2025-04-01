@@ -12,14 +12,19 @@ export class AdminController {
     return this.adminService.create(createAdminDto);
   }
 
-  @Get('blog')
-  findAllBlog() {
-    return this.adminService.findAll();
+  @Get('info')
+  getAllInformation() {
+    return this.adminService.getAllInfo();
   }
 
   @Get('user')
   findAllUser() {
-    return this.adminService.findAll();
+    return this.adminService.findAllUser(); 
+  }
+
+  @Get('blog')
+  findAllBlog() {
+    return this.adminService.findAllBlog();
   }
 
   @Get('sum')
