@@ -1,19 +1,13 @@
 
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import { DrizzleDB } from 'src/drizzle/types/drizzletype';
 import * as schema from 'src/drizzle/schema';
-import { eq, lt, gte, ne,and, isNull, isNotNull } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class AdminService {
-  constructor(@Inject(DRIZZLE) private db: DrizzleDB) { }
-
-  create(createAdminDto: CreateAdminDto) {
-    return 'This action adds a new admin';
-  }
+  constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) { }
 
   async getAllInfo() {
     const allUser = await this.db.$count(schema.users);
@@ -50,10 +44,6 @@ export class AdminService {
 
   findOne(id: number) {
     return `This action returns a #${id} admin`;
-  }
-
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
   }
 
   remove(id: number) {

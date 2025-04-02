@@ -11,9 +11,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { DrizzleModule } from 'src/drizzle/drizzle.module';
 import { JwtRefreshStrategy } from './strategies/jwt_refresh.strategy';
-import { config } from 'dotenv';
-
-
 
 @Module({
   imports: [UserModule,
@@ -24,7 +21,7 @@ import { config } from 'dotenv';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
         global: true,
-        signOptions: { expiresIn: configService.get('JWT_ACCESS_TOKEN_EXP') || '60m'},
+        signOptions: { expiresIn: configService.get('JWT_ACCESS_TOKEN_EXP') ?? '60m'},
       }),
       inject: [ConfigService]
         

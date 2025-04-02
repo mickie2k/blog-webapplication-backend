@@ -6,16 +6,14 @@ import * as argon2 from 'argon2';
 import { DrizzleDB } from 'src/drizzle/types/drizzletype';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import * as schema from 'src/drizzle/schema';
-import { eq, lt, gte, ne } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { Response } from 'express';
 
 
 @Injectable()
 export class AuthService {
-    private secret: Buffer;
-    private EMAIL_REGEXP = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
-    private PASSWORDREGEXP = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-    constructor(private readonly userService: UserService,  private jwtService: JwtService, @Inject(DRIZZLE) private db: DrizzleDB) {
+    private readonly secret: Buffer;
+    constructor(private readonly userService: UserService,  private readonly jwtService: JwtService, @Inject(DRIZZLE) private readonly db: DrizzleDB) {
         this.secret = this.getSecret();
         
     }
@@ -37,10 +35,6 @@ export class AuthService {
 
         if(!email || !password){
           throw new UnauthorizedException('Required input');
-        }
-
-        if(!this.EMAIL_REGEXP.test(email)){
-          throw new BadRequestException('Email is Invalid');
         }
 
         if(!password){
@@ -69,7 +63,7 @@ export class AuthService {
         
           const accessToken = await this.jwtService.signAsync(payload)
           const refreshToken = await this.jwtService.signAsync(payload, {
-            expiresIn: process.env.JWT_REFRESH_TOKEN_EXP || '30d',
+            expiresIn: process.env.JWT_REFRESH_TOKEN_EXP ?? '30d',
             // need different secret 
           })
           
@@ -108,13 +102,6 @@ export class AuthService {
             throw new BadRequestException('Required input');
         }
 
-        if(!this.EMAIL_REGEXP.test(data.email)){
-            throw new BadRequestException('Email is Invalid');
-        }
-
-        if(!this.PASSWORDREGEXP.test(data.password)){
-          throw new BadRequestException('Password is Invalid');
-        }
         if(await this.userService.findUser({email: data.email})){
             throw new ConflictException('Email already exists');
         }

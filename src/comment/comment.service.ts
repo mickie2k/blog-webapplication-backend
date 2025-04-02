@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class CommentService {
-  constructor(@Inject(DRIZZLE) private db: DrizzleDB) { }
+  constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) { }
 
   async create(createCommentDto: CreateCommentDto,user : any) {
     try{
@@ -56,7 +56,7 @@ export class CommentService {
       return deleteComment;
     }catch (error) {
       console.log(error)
-      throw new Error('Failed to delete blog');
+      throw new InternalServerErrorException('Failed to delete comment');
     }
   }
 }

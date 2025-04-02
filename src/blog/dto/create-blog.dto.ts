@@ -1,5 +1,5 @@
 
-import { Transform, TransformFnParams } from "class-transformer";
+import { Transform } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsString, MaxLength } from "class-validator";
 import * as _ from 'lodash'
 export class CreateBlogDto {

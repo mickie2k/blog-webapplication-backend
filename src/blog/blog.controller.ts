@@ -7,9 +7,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/role.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import { CommentService } from 'src/comment/comment.service';
-import { NotFoundError } from 'rxjs';
-
-
 
 @Controller('blog')
 export class BlogController {

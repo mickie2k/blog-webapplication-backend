@@ -4,11 +4,11 @@ import * as schema from 'src/drizzle/schema';
 import { CreateUserDto, FindUserDto  } from './dto/user.dto';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import { DrizzleDB } from 'src/drizzle/types/drizzletype';
-import { eq, lt, gte, ne,and, isNull, isNotNull } from 'drizzle-orm';
+import { eq, and, isNotNull } from 'drizzle-orm';
 
 @Injectable()
 export class UserService {
-    constructor(@Inject(DRIZZLE) private db: DrizzleDB) { }
+    constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) { }
 
 
     async createUser(data: CreateUserDto) {

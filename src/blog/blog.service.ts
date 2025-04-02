@@ -6,11 +6,12 @@ import * as schema from 'src/drizzle/schema';
 import { DRIZZLE } from 'src/drizzle/drizzle.module';
 import { plainToClass } from 'class-transformer';
 import * as _ from 'lodash'
-import { eq, lt, gte, ne,and, isNull, isNotNull,desc } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { Role } from 'src/auth/enums/role.enum';
+
 @Injectable()
 export class BlogService {
-  constructor(@Inject(DRIZZLE) private db: DrizzleDB) { }
+  constructor(@Inject(DRIZZLE) private readonly db: DrizzleDB) { }
   async create(createBlogDto: CreateBlogDto, user: any) {
 
     const transformedCreateBlogDto =  plainToClass(CreateBlogDto, createBlogDto);
