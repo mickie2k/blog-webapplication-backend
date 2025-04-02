@@ -134,7 +134,19 @@ w
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+  async remove(id: number, user:any) {
+      const result = await this.db.delete(schema.blog).where(
+        and(
+          eq(schema.blog.id, id),
+          eq(schema.blog.authorid, user.id)
+        )
+      );
+      
+      if (result[0].affectedRows === 0) {
+        throw new NotFoundException(`Blog with id ${id} not found or you don't have permission to delete it`);
+      }
+      
+      return { success: true, message: 'Blog deleted successfully' };
+    
   }
 }

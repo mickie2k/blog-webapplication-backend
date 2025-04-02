@@ -9,10 +9,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google'){
         super({
             clientID: configService.get('GOOGLE_CLIENT_ID') || '',
             clientSecret: configService.get('GOOGLE_CLIENT_SECRET') || '',
-            callbackURL: 'http://localhost:3000/auth/google/callback',
+            callbackURL: configService.get('GOOGLE_CALLBACK_URL') || '',
             scope: ['email', 'profile'],
         });
-
+        console.log(configService.get('GOOGLE_CALLBACK_URL'))
       }
 
       async validate(
@@ -34,6 +34,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google'){
           accessToken,
           refreshToken,
         };
+
+       
         done(null, user);
       }
 }

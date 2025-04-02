@@ -17,6 +17,8 @@ export class UserController {
 
     }
 
+    @Roles(Role.ADMIN)
+    @UseGuards(JWTAuthGuard, RolesGuard)
     @Get('email')
     findUserByEmail(@Body() data: FindUserDto){
         return this.userService.findUser(data);

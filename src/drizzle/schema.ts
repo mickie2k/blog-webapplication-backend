@@ -39,3 +39,4 @@ export const comment = mysqlTable('comment', {
     createdAt: timestamp().defaultNow(),
     updatedAt: timestamp().$onUpdate(()=> new Date()).defaultNow(),
 })
+

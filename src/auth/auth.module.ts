@@ -11,9 +11,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { DrizzleModule } from 'src/drizzle/drizzle.module';
 import { JwtRefreshStrategy } from './strategies/jwt_refresh.strategy';
-import { RolesGuard } from './guards/roles.guard';
-import { APP_GUARD } from '@nestjs/core';
-import { JWTAuthGuard } from './guards/jwt_auth.guard';
+import { config } from 'dotenv';
+
 
 
 @Module({
@@ -25,7 +24,7 @@ import { JWTAuthGuard } from './guards/jwt_auth.guard';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
         global: true,
-        signOptions: { expiresIn: '60m' },
+        signOptions: { expiresIn: configService.get('JWT_ACCESS_TOKEN_EXP') || '60m'},
       }),
       inject: [ConfigService]
         

@@ -1,8 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
+import { JWTAuthGuard } from 'src/auth/guards/jwt_auth.guard';
+import { Roles } from 'src/auth/decorators/role.decorator';
+import { Role } from 'src/auth/enums/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
+@Roles(Role.ADMIN)
+@UseGuards(JWTAuthGuard, RolesGuard)
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -12,14 +18,19 @@ export class AdminController {
     return this.adminService.create(createAdminDto);
   }
 
-  @Get('blog')
-  findAllBlog() {
-    return this.adminService.findAll();
+  @Get('info')
+  getAllInformation() {
+    return this.adminService.getAllInfo();
   }
 
   @Get('user')
   findAllUser() {
-    return this.adminService.findAll();
+    return this.adminService.findAllUser(); 
+  }
+
+  @Get('blog')
+  findAllBlog() {
+    return this.adminService.findAllBlog();
   }
 
   @Get('sum')

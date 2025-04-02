@@ -6,7 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   let httpsOptions: { key: Buffer; cert: Buffer } | undefined = undefined;
-
+  const corsUri = process.env.FRONTEND_URL?.split(' ');
   // console.log(process.env.NODE_ENV);
   // if (process.env.NODE_ENV === 'production') {
   //   console.log('Production mode');
@@ -20,9 +20,9 @@ async function bootstrap() {
     httpsOptions,
   });
 
-  console.log(process.env.FRONTEND_URL);
+  console.log(corsUri);
   app.enableCors({
-    origin: [process.env.FRONTEND_URL],
+    origin: corsUri,
     credentials: true
   });
   app.useGlobalPipes(new ValidationPipe());

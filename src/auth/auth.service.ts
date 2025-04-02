@@ -69,22 +69,25 @@ export class AuthService {
         
           const accessToken = await this.jwtService.signAsync(payload)
           const refreshToken = await this.jwtService.signAsync(payload, {
-            expiresIn: '7d',
+            expiresIn: process.env.JWT_REFRESH_TOKEN_EXP || '30d',
             // need different secret 
           })
           
-             res.cookie('access_token', accessToken , {
+          const cookieAccessTokenExp = Number(process.env.COOKIE_JWT_ACCESS_TOKEN_EXP) || 1
+          const cookieRefreshTokenExp = Number(process.env.COOKIE_JWT_REFRESH_TOKEN_EXP) || 30
+
+            res.cookie('access_token', accessToken , {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            expires: new Date(Date.now() + 1000 * 60 * 60)
+            expires: new Date(Date.now() + cookieAccessTokenExp *  1000 * 60 * 60)
             })
 
             res.cookie('refresh_token', refreshToken , {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+            expires: new Date(Date.now() + cookieRefreshTokenExp * 1000 * 60 * 60 * 24)
             })
           
             if(redirect){
